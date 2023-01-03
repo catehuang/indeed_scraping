@@ -16,6 +16,8 @@ from selenium.webdriver.common.by import By
 # Driver path
 load_dotenv()
 path = os.getenv("CHROME_DRIVER_PATH")
+if path is None:
+    raise ValueError('Please specify the path of Chrome Drive!')
 service = Service(path)
 driver = webdriver.Chrome(service=service)
 
@@ -29,8 +31,12 @@ driver.implicitly_wait(10)
 # Keywords for searching
 # job position
 what = os.getenv('WHAT')
+if what is None:
+    raise ValueError('Please specify the job title you are looking for!')
 # job location
 where = os.getenv('WHERE')
+if where is None:
+    raise ValueError('Please specify the job location you prefer!')
 # create url
 url = 'https://ca.indeed.com/jobs?'
 if what is not None:
