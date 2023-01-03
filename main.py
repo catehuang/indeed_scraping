@@ -2,6 +2,7 @@
 import datetime
 import math
 import re
+import sys
 import time
 
 from bs4 import BeautifulSoup
@@ -34,10 +35,12 @@ driver.implicitly_wait(10)
 what = os.getenv('WHAT')
 if what is None:
     raise ValueError('Please specify the job title you are looking for!')
+
 # job location
 where = os.getenv('WHERE')
 if where is None:
     raise ValueError('Please specify the job location you prefer!')
+
 # create url
 url = 'https://ca.indeed.com/jobs?'
 if what is not None:
@@ -46,10 +49,12 @@ if what is not None:
 if where is not None:
     location = where.replace(' ', '+').replace(',', '%2C')
     url += '&l=' + location
+
 # days = 1/3/7/14
 posted_within = os.getenv('WITHIN_DAYS')
 if posted_within is not None:
     url += '&fromage=' + str(posted_within)
+
 # is remote
 if os.getenv('IS_REMOTE'):
     url += '&sc=0kf%3Aattr(DSQF7)%3B'
@@ -59,7 +64,7 @@ driver.get(url)
 time.sleep(2)
 
 
-def estimate_total_pages():
+def get_total_number_of_jobs():
     try:
         main_block = driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
         job_count_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobCountAndSortPane-jobCount')
@@ -68,8 +73,10 @@ def estimate_total_pages():
         job_number = re.sub('[^0-9]', '', job_count)
         print(f"Total number of jobs is {job_number}, "
               f"and there are about {math.ceil(int(job_number) / 15)} pages based on the number\n")
+        return job_number
     except NoSuchElementException:
-        raise ValueError("Can't find any result for the job title!")
+        # raise ValueError("Can't find any result for the job title!")
+        return -1
 
 
 def next_page_number():
@@ -197,7 +204,7 @@ def scraping_a_page():
             except NoSuchElementException:
                 # 2) is a button - Apply now; copy the page url
                 apply_button_area = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
-                link = apply_button_area.find_element(By.CSS_SELECTOR, 'span')\
+                link = apply_button_area.find_element(By.CSS_SELECTOR, 'span') \
                     .get_attribute('data-indeed-apply-joburl')
 
             job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
@@ -227,11 +234,25 @@ def scraping_a_page():
     print(f"Spent {spent_time_one_this_page}s on this page\n")
 
 
-s_time = time.time()
-tag = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
+total_jobs = int(get_total_number_of_jobs())
+if total_jobs == -1:
+    print(f"Can't find any job for the position of {what} in {where} with assigned patterns\n")
+    sys.exit(0)
 
+if total_jobs > 1500:
+    user_input = input(f"There are {total_jobs} jobs on Indeed. It might take hours for scraping data.\n"
+                       f"Do you want to continue? yes/no ")
+    if re.match(r'(no|n)', user_input, re.I):
+        print("Try to change the position(what), location(where) or date posted(WITHIN_DAYS) "
+              "to narrow down the result\n")
+        sys.exit(0)
+    else:
+        print("Alright, let go!\n")
+
+tag = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
+# Start to scrap data
+s_time = time.time()
 keep_going = True
-estimate_total_pages()
 
 with open(f"job-{tag}.txt", 'w', encoding="UTF-8") as f:
     print(f"# Collect page 1")
