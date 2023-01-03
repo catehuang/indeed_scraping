@@ -63,6 +63,9 @@ if os.getenv('IS_REMOTE'):
 driver.get(url)
 time.sleep(2)
 
+# counter for collected jobs
+collected_jobs = 0
+
 
 def get_total_number_of_jobs():
     try:
@@ -72,7 +75,7 @@ def get_total_number_of_jobs():
         job_count = job_count_span.__getitem__(0).text
         job_number = re.sub('[^0-9]', '', job_count)
         print(f"Total number of jobs is {job_number}, "
-              f"and there are about {math.ceil(int(job_number) / 15)} pages based on the number\n")
+              f"and there are about {math.ceil(int(job_number) / 15)} pages based on the total number\n")
         return job_number
     except NoSuchElementException:
         # raise ValueError("Can't find any result for the job title!")
@@ -186,6 +189,10 @@ def scraping_a_page():
         job_title_block = job_result_block.find_element(By.CSS_SELECTOR, 'h2')
         # filter jobs by their titles
         if is_qualified(job_title_block.text):
+            # Get one job information!
+            global collected_jobs
+            collected_jobs += 1
+
             company_name_block = job_result_block.find_element(By.CLASS_NAME, 'companyName')
             company_location_block = job_result_block.find_element(By.CLASS_NAME, 'companyLocation')
             job_title_block.click()
@@ -247,7 +254,7 @@ if total_jobs > 1500:
               "to narrow down the result\n")
         sys.exit(0)
     else:
-        print("Alright, let go!\n")
+        print("Alright, let's go!\n")
 
 tag = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
 # Start to scrap data
@@ -268,5 +275,6 @@ with open(f"job-{tag}.txt", 'w', encoding="UTF-8") as f:
 f.close()
 e_time = time.time()
 t_time = (e_time - s_time) / 60
-print("Spent {:.2f} minutes\n".format(t_time))
+print(f"{collected_jobs} jobs collected!")
+print("Spent {:.2f} minutes".format(t_time))
 print("Done!")
