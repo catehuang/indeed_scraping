@@ -1,4 +1,5 @@
 # Libraries
+import datetime
 import math
 import re
 import time
@@ -59,13 +60,16 @@ time.sleep(2)
 
 
 def estimate_total_pages():
-    main_block = driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
-    job_count_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobCountAndSortPane-jobCount')
-    job_count_span = job_count_block.find_elements(By.CSS_SELECTOR, 'span')
-    job_count = job_count_span.__getitem__(0).text
-    job_number = re.sub('[^0-9]', '', job_count)
-    print(f"Total number of jobs is {job_number}, "
-          f"and there are about {math.ceil(int(job_number) / 15)} pages based on the number\n")
+    try:
+        main_block = driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
+        job_count_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobCountAndSortPane-jobCount')
+        job_count_span = job_count_block.find_elements(By.CSS_SELECTOR, 'span')
+        job_count = job_count_span.__getitem__(0).text
+        job_number = re.sub('[^0-9]', '', job_count)
+        print(f"Total number of jobs is {job_number}, "
+              f"and there are about {math.ceil(int(job_number) / 15)} pages based on the number\n")
+    except NoSuchElementException:
+        raise ValueError("Can't find any result for the job title!")
 
 
 def next_page_number():
@@ -224,10 +228,12 @@ def scraping_a_page():
 
 
 s_time = time.time()
-with open('job.txt', 'w', encoding="UTF-8") as f:
-    max_page_index = 3
-    keep_going = True
-    estimate_total_pages()
+tag = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
+
+keep_going = True
+estimate_total_pages()
+
+with open(f"job-{tag}.txt", 'w', encoding="UTF-8") as f:
     print(f"# Collect page 1")
     while keep_going:
         scraping_a_page()
