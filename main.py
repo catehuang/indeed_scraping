@@ -1,7 +1,7 @@
 # Libraries
+import math
 import re
 import time
-
 
 from bs4 import BeautifulSoup
 import requests
@@ -51,6 +51,17 @@ if os.getenv('IS_REMOTE'):
 driver.get(url)
 time.sleep(2)
 
+
+def estimate_total_pages():
+    main_block = driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
+    job_count_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobCountAndSortPane-jobCount')
+    job_count_span = job_count_block.find_elements(By.CSS_SELECTOR, 'span')
+    job_count = job_count_span.__getitem__(0).text
+    job_number = re.sub('[^0-9]', '', job_count)
+    print(f"Total number of jobs is {job_number}, "
+          f"and there are about {math.ceil(int(job_number) / 15)} pages based on the number\n")
+
+
 def next_page_number():
     """Return the next page number if there is a next page; otherwise return -1"""
     main_block = driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
@@ -96,6 +107,16 @@ def go_to_next_page(page_number):
             if int(anchor.text) == page_number:
                 anchor.click()
                 time.sleep(5)
+                # deal with the popup window if there's one
+                try:
+                    popup_window_close = driver.find_element(By.XPATH,
+                                                             '//*[@id="mosaic-modal-mosaic-provider-desktopserp-'
+                                                             'jobalert-popup"]/div/div/div[1]/div/button')
+                    popup_window_close.click()
+                    time.sleep(1)
+                except NoSuchElementException as e:
+                    pass
+
                 return
 
 
@@ -112,7 +133,7 @@ def is_qualified(title):
             counter += 1
 
         if re.search(rf"({rule_string})", title, re.I) is None:
-            print("no keywords included")
+            print(f"no keywords included - {title}")
             return False
 
     if len(os.getenv('RULES_EXCLUDED').split(" ")) != 0:
@@ -126,13 +147,15 @@ def is_qualified(title):
             counter += 1
 
         if re.search(rf"({rule_string})", title, re.I):
-            print("included exclude keywords")
+            print(f"included exclude keywords - {title}")
             return False
     return True
 
 
 def scraping_a_page():
     """ Scraping data from a page """
+    # For measuring performance
+    start_time = time.time()
     # Locate target block
     main_block = driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
 
@@ -152,25 +175,25 @@ def scraping_a_page():
             time.sleep(2)
             # right column - content
             right_panel = main_block.find_element(By.CLASS_NAME, 'jobsearch-RightPane')
+
+            # grep the apply link
             apply_button_block = right_panel.find_element(By.ID, 'jobsearch-ViewJobButtons-container')
             # there are two kinds of button/link for applying a job
-            # link - Apply on company website
-            ''' need time to think about this part
+            link = ""
             try:
-                # is a button - Apply now
-                apply_button = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
-                apply_item = apply_button.find_element(By.CLASS_NAME, 'indeed-apply-widget')
-                backurl = apply_item.get_attribute('data-indeed-apply-pingbackurl')
-                token = apply_item.get_attribute('data-indeed-apply-apitocken')
+                # 1) is an anchor link for applying on company site
+                apply_button_area = apply_button_block.find_element(By.ID, 'applyButtonLinkContainer')
+                link = apply_button_area.find_elements(By.CSS_SELECTOR, 'a').__getitem__(0).get_attribute('href')
             except NoSuchElementException:
-                apply_item = apply_button_block.find_element(By.CLASS_NAME, 'a')
-                company_url = apply_item.get_attribute('href')
-            '''
+                # 2) is a button - Apply now; copy the page url
+                apply_button_area = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
+                link = apply_button_area.find_element(By.CSS_SELECTOR, 'span')\
+                    .get_attribute('data-indeed-apply-joburl')
 
             job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
             job_description = job_content_block.find_element(By.ID, 'jobDescriptionText')
 
-            print(f"Found the job as {job_title_block.text}")
+            print(f"Found the job as {job_title_block.text} - {link}")
             # print(f"Position: {job_title_block.text}")
             # print(f"Company: {company_name_block.text}")
             # print(f"Location: {company_location_block.text}")
@@ -181,29 +204,36 @@ def scraping_a_page():
             f.write(f"Position: {job_title_block.text}\n")
             f.write(f"Company: {company_name_block.text}\n")
             f.write(f"Location: {company_location_block.text}\n")
-            f.write(f"Apply Link:\n")
+            f.write(f"Apply Link: {link}\n")
             f.write("Job Description:\n")
             f.write(job_description.text)
             f.write('\n\n')
         # scroll down for each job element
         driver.execute_script("arguments[0].scrollIntoView();", job)
 
+    # For measuring time
+    end_time = time.time()
+    spent_time_one_this_page = int(end_time - start_time)
+    print(f"Spent {spent_time_one_this_page}s on this page\n")
 
+
+s_time = time.time()
 with open('job.txt', 'w', encoding="UTF-8") as f:
     max_page_index = 3
     keep_going = True
+    estimate_total_pages()
     print(f"# Collect page 1")
     while keep_going:
         scraping_a_page()
         next_page = next_page_number()
         current_page = next_page - 1
-        if next_page != -1 and next_page < 4:
+        if next_page != -1:
             print(f"\n# Collect page {next_page}")
             go_to_next_page(next_page)
         else:
             keep_going = False
 f.close()
+e_time = time.time()
+t_time = (e_time - s_time) / 60
+print("Spent {:.2f} minutes\n".format(t_time))
 print("Done!")
-
-
-
