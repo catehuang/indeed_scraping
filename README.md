@@ -26,6 +26,8 @@ RULES_INCLUDED=
 RULES_EXCLUDED=
 </pre>
 
+- If the number of jobs on Indeed for the specified position, location, and date posted is more than 1500, it will prompt for a confirmation to continue since it may take hours to finish the task.
+
 ### How to choose the included/excluded keywords? / How do I make sure I selected the right words for searching?
 - When the application starts to scrap the from Indeed, it also shows messages including the job titles, the reason why the jobs doesn't be collected if they are not qualify for the requirement you assigned, and the links for applying a job.
 - You can ues these messages from console to check the keywords you assigned and determine if the keywords are right or wrong.
