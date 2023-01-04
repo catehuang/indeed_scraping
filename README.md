@@ -1,5 +1,8 @@
 ## indeed_scraping
 
+### Note
+- It will have a user-friendly interface for reading all job information. I am still working on it.
+
 ### Purpose 
 - Even you carefully selected your keywords and typed them into the search field on the Indeed, you get tons of results that you don't want. You spend your valuable time to read all titles and click the next page repeatedly until you get bored or luckily reach the end of the result.
 
