@@ -3,7 +3,7 @@
 ### Purpose 
 - Even you carefully selected your keywords and typed them into the search field on the Indeed, you get tons of results that you don't want. You spend your valuable time to read all titles and click the next page repeatedly until you get bored or luckily reach the end of the result.
 
-- This application uses Python and Selenium to filter search results from Indeed, and generates a file job.txt with a time tage which saves all qualified jobs with their job information.
+- This application uses Python and Selenium to filter search results from Indeed, and generates a file job.csv with a time tage which saves all qualified jobs with their job information.
 
 ### How to use this application
 - You will need to download the Chrome Drive corresponding to your Chrome version, and create a file named .env to write down your preferences. 
