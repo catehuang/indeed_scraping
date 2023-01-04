@@ -4,11 +4,12 @@ import math
 import re
 import sys
 import time
-
+import os
+from dotenv import load_dotenv
+import pandas as pd
 from bs4 import BeautifulSoup
 import requests
-from dotenv import load_dotenv
-import os
+
 import selenium
 from selenium import webdriver
 from selenium.common import NoSuchElementException
@@ -17,7 +18,7 @@ from selenium.webdriver.common.by import By
 
 # Driver path
 load_dotenv()
-path = os.getenv("CHROME_DRIVER_PATH")
+path = os.environ.get("CHROME_DRIVER_PATH")
 if path is None:
     raise ValueError('Please specify the path of Chrome Drive!')
 service = Service(path)
@@ -32,12 +33,12 @@ driver.implicitly_wait(10)
 
 # Keywords for searching
 # job position
-what = os.getenv('WHAT')
+what = os.environ.get('WHAT')
 if what is None:
     raise ValueError('Please specify the job title you are looking for!')
 
 # job location
-where = os.getenv('WHERE')
+where = os.environ.get('WHERE')
 if where is None:
     raise ValueError('Please specify the job location you prefer!')
 
@@ -51,12 +52,12 @@ if where is not None:
     url += '&l=' + location
 
 # days = 1/3/7/14
-posted_within = os.getenv('WITHIN_DAYS')
+posted_within = os.environ.get('WITHIN_DAYS')
 if posted_within is not None:
     url += '&fromage=' + str(posted_within)
 
 # is remote
-if os.getenv('IS_REMOTE'):
+if os.environ.get('IS_REMOTE'):
     url += '&sc=0kf%3Aattr(DSQF7)%3B'
 
 # Enter the url
@@ -65,6 +66,12 @@ time.sleep(2)
 
 # counter for collected jobs
 collected_jobs = 0
+# store data
+job_titles = []
+company_names = []
+company_locations = []
+apply_links = []
+job_descriptions = []
 
 
 def get_total_number_of_jobs():
@@ -142,8 +149,8 @@ def go_to_next_page(page_number):
 
 def is_qualified(title):
     """ Return true if the title fits certain conditions """
-    if len(os.getenv('RULES_INCLUDED').split(" ")) != 0:
-        including_certain_words = os.getenv('RULES_INCLUDED').split(" ")
+    if len(os.environ.get('RULES_INCLUDED').split(" ")) != 0:
+        including_certain_words = os.environ.get('RULES_INCLUDED').split(" ")
         rule_string = ""
         counter = 1
         for rule in including_certain_words:
@@ -156,8 +163,8 @@ def is_qualified(title):
             print(f"no keywords included - {title}")
             return False
 
-    if len(os.getenv('RULES_EXCLUDED').split(" ")) != 0:
-        excluding_certain_words = os.getenv('RULES_EXCLUDED').split(" ")
+    if len(os.environ.get('RULES_EXCLUDED').split(" ")) != 0:
+        excluding_certain_words = os.environ.get('RULES_EXCLUDED').split(" ")
         rule_string = ""
         counter = 1
         for rule in excluding_certain_words:
@@ -225,13 +232,12 @@ def scraping_a_page():
             # print(job_description.text)
             # print()
 
-            f.write(f"Position: {job_title_block.text}\n")
-            f.write(f"Company: {company_name_block.text}\n")
-            f.write(f"Location: {company_location_block.text}\n")
-            f.write(f"Apply Link: {link}\n")
-            f.write("Job Description:\n")
-            f.write(job_description.text)
-            f.write('\n\n')
+            global job_titles, company_names, company_locations, apply_links, job_descriptions
+            job_titles.append(job_title_block.text)
+            company_names.append(company_name_block.text)
+            company_locations.append(company_location_block.text)
+            apply_links.append(link)
+            job_descriptions.append(job_description.text)
         # scroll down for each job element
         driver.execute_script("arguments[0].scrollIntoView();", job)
 
@@ -261,18 +267,22 @@ tag = datetime.datetime.now().strftime("%Y-%m-%d-%H%M%S")
 s_time = time.time()
 keep_going = True
 
-with open(f"job-{tag}.txt", 'w', encoding="UTF-8") as f:
-    print(f"# Collect page 1")
-    while keep_going:
-        scraping_a_page()
-        next_page = next_page_number()
-        current_page = next_page - 1
-        if next_page != -1:
-            print(f"\n# Collect page {next_page}")
-            go_to_next_page(next_page)
-        else:
-            keep_going = False
-f.close()
+print(f"# Collect page 1")
+while keep_going:
+    scraping_a_page()
+    next_page = next_page_number()
+    current_page = next_page - 1
+    if next_page != -1:
+        print(f"\n# Collect page {next_page}")
+        go_to_next_page(next_page)
+    else:
+        keep_going = False
+
+# create csv file , encoding='utf8'
+df = pd.DataFrame(list(zip(job_titles, company_names, apply_links, company_locations, job_descriptions)),
+                  columns=["job_title", "company_name", "apply_link", "company_location", "job_description"])
+df.to_csv(f"logs/job-{tag}.csv", index=False)
+
 e_time = time.time()
 t_time = (e_time - s_time) / 60
 print(f"{collected_jobs} jobs collected!")
