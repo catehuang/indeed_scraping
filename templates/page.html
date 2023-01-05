@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Search Results from Indeed</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+              integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    </head>
+    <body>
+        <div class="w-100 p-3">
+            <div class="summary">
+                <h5>There are {{ total_number_of_jobs }} jobs matched on Indeed</h5>
+            </div>
+
+            <div class="d-flex">
+                <div class="left_panel w-25 d-flex flex-column vh-100 overflow-y-auto">
+                    {% for job in jobs %}
+                    <div class="job_info card my-2 shadow">
+                        <div class="card-body">
+                            <button type="button" class="btn btn-link p-0 m-0 text-primary text-decoration-none"
+                                    onclick="show_content({{ job }}, {{ page_id }})">
+                                {{ job.title }}
+                            </button>
+                            <h6 class="card-subtitle mb-2">{{ job.company_name }}</h6>
+                            <p class="card-text">{{ job.location }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="right_panel w-75 pl-3">
+                    <div class="card my-2">
+                        <div class="card-body text-wrap w-100" id="job_content"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script src="{{url_for('static', filename='page.js')}}"></script>
+    </body>
+</html>
