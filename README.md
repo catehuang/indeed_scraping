@@ -32,6 +32,9 @@ RULES_EXCLUDED=
 
 - Note: These processes will be improved later.
 
+<img src="https://user-images.githubusercontent.com/35821309/211101442-1dfe7ecb-84fa-4194-907d-7f1e420841af.png" width="80%" />
+
+
 ### How to choose the included/excluded keywords? / How do I make sure I selected the right words for searching?
 - When the application starts to scrap the from Indeed, it also shows messages including the job titles, the reason why the jobs doesn't be collected if they are not qualify for the requirement you assigned, and the links for applying a job.
 - You can ues these messages from console to check the keywords you assigned and determine if the keywords are right or wrong.
