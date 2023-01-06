@@ -5,37 +5,73 @@
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-
     </head>
     <body>
-        <div class="w-100 p-3">
+        <div class="w-75 p-3 mx-auto">
             <div class="summary">
                 <h5>There are {{ total_number_of_jobs }} jobs matched on Indeed</h5>
             </div>
 
             <div class="d-flex">
-                <div class="left_panel w-25 d-flex flex-column vh-100 overflow-y-auto">
-                    {% for job in jobs %}
-                    <div class="job_info card my-2 shadow">
-                        <div class="card-body">
-                            <button type="button" class="btn btn-link p-0 m-0 text-primary text-decoration-none"
-                                    onclick="show_content({{ job }}, {{ page_id }})">
-                                {{ job.title }}
-                            </button>
-                            <h6 class="card-subtitle mb-2">{{ job.company_name }}</h6>
-                            <p class="card-text">{{ job.location }}</p>
+                <div class="left_panel w-25 ">
+                    <div class="">
+                        {% for job in jobs %}
+                        <div class="job_info my-2 shadow border border-primary rounded">
+                            <div class="p-2">
+                                <a type="button" class="p-0 m-0 text-primary" data-bs-toggle="button"
+                                        onclick="show_content({{ job }}, {{ page_id }})">
+                                    {{ job.title }}
+                                </a>
+                                <h6 class="mb-2">{{ job.company_name }}</h6>
+                                <p class="">{{ job.location }}</p>
+                            </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
+                    <div class="d-flex justify-content-between">
+                        {% if page_id > 1 %}
+                        <a type="button" class="btn btn-dark" href="{{ url_for('show_page', page_id=1) }}"><<</a>
+                        {% else %}
+                        <a type="button" class="btn btn-dark" aria-disabled="true"><<</a>
+                        {% endif %}
+
+                        {% if page_id > 1 %}
+                        <a href="{{ url_for('show_page', page_id=page_id - 1) }}" type="button" class="btn btn-dark"><</a>
+                        {% else %}
+                        <a type="button" class="btn btn-dark" aria-disabled="true"><</a>
+                        {% endif%}
+
+                        <button type="button" class="btn btn-primary">{{ page_id }}</button>
+
+                        {% if page_id < total_pages %}
+                        <a href="{{ url_for('show_page', page_id=page_id + 1) }}" type="button" class="btn btn-dark">></a>
+                        {% else %}
+                        <a type="button" class="btn btn-dark" aria-disabled="true">></a>
+                        {% endif%}
+
+                        {% if page_id < total_pages %}
+                        <a type="button" class="btn btn-dark" href="{{ url_for('show_page', page_id=total_pages) }}">>></a>
+                        {% else %}
+                        <a type="button" class="btn btn-dark" aria-disabled="true">>></a>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class="right_panel w-75 pl-3">
-                    <div class="card my-2">
-                        <div class="card-body text-wrap w-100" id="job_content"></div>
+                    <div class="my-2 justify-content-center border rounded border-primary">
+                        <div class="w-100">
+                            <div class="d-flex flex-column py-5" id="job_content">
+                                <h3 class="text-center" id="job_title"> {{jobs[0].title}} </h3>
+                                <h4 class="mb-2 text-center text-info" id="job_company_name"> {{ jobs[0].company_name}} </h4>
+                                <p class="b-2 text-center" id="job_location">{{ jobs[0].location }} </p>
+                                <a href="{{ jobs[0].link }}" type="button" class="btn btn-primary w-50 mb-5 mx-auto" target="_blank" id="job_link">Apply</a>
+                                <p class="px-5" id="job_description"> {{ jobs[0].description }} </p>
+                                <a href="#" class="mx-auto">Back to Top</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
         <script src="{{url_for('static', filename='page.js')}}"></script>
     </body>

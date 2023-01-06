@@ -26,18 +26,30 @@ for row_index in range(0, df.shape[0]):
     }
     jobs.append(job)
 
+total_number_of_jobs = df.shape[0]
+total_pages = int(len(jobs) / 15)
+if len(jobs) % 15 > 0:
+    total_pages += 1
+
 
 @app.route("/")
 def home():
-    # includes both start and stop item
-    current_job_list = jobs[:14]
-    return render_template("page.html", total_number_of_jobs=df.shape[0], page_id=0, jobs=current_job_list)
+    return redirect(url_for('show_page', page_id=1))
 
 
 @app.route("/page/<int:page_id>")
 def show_page(page_id):
-    current_job_list = jobs[page_id * 15: (page_id + 1) * 15 - 1]
-    return render_template("page.html", total_number_of_jobs=df.shape[0], page_id=page_id, jobs=current_job_list)
+    if 0 < page_id <= total_pages:
+        current_job_list = jobs[(page_id - 1) * 15: page_id * 15 - 1]
+        return render_template("page.html", total_number_of_jobs=total_number_of_jobs, page_id=page_id,
+                               jobs=current_job_list, total_pages=total_pages)
+    else:
+        return redirect(url_for('show_page', page_id=1))
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    return redirect('/')
 
 
 if __name__ == "__show_pages__":
