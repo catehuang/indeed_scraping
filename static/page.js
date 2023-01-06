@@ -24,6 +24,19 @@ function show_content(job, page_id)
 }
 
 
+// add/remove the active class for further customization
+$(function()
+{
+    $('.list-group li').click(function(e)
+    {
+        e.preventDefault();
+        $that = $(this);
+        $that.parent().find('li').removeClass('active');
+        $that.addClass('active');
+    });
+})
+
+
 /* use iframe but: because an ancestor violates the following Content Security Policy directive: "frame-ancestors 'self
 function show_content(job, page_id)
 {

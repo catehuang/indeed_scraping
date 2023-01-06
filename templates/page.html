@@ -4,6 +4,7 @@
         <title>Search Results from Indeed</title>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="{{url_for('static', filename='page.css')}}">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     </head>
     <body>
@@ -13,60 +14,72 @@
             </div>
 
             <div class="d-flex">
-                <div class="left_panel w-25 ">
-                    <div class="">
-                        {% for job in jobs %}
-                        <div class="job_info my-2 shadow border border-primary rounded">
-                            <div class="p-2">
-                                <a type="button" class="p-0 m-0 text-primary" data-bs-toggle="button"
-                                        onclick="show_content({{ job }}, {{ page_id }})">
-                                    {{ job.title }}
+                <aside class="left_panel w-25" id="job_list">
+                    <nav>
+                        <ul class="list-group">
+                            {% for job in jobs %}
+                            {% if job == jobs[0] %}
+                            <li class="my-2 list-group-item list-group-item-action list-group-item-primary rounded active">
+                                <a class="text-decoration-none cursor-effect" onclick="show_content({{ job }}, {{ page_id }})">
+                                    <div class="rounded">
+                                        <h6 class="">{{ job.title }}</h6>
+                                        <h6 class="mb-2">{{ job.company_name }}</h6>
+                                        <p class="">{{ job.location }}</p>
+                                    </div>
                                 </a>
-                                <h6 class="mb-2">{{ job.company_name }}</h6>
-                                <p class="">{{ job.location }}</p>
-                            </div>
+                            </li>
+                            {% else %}
+                            <li class="my-2 list-group-item list-group-item-action list-group-item-primary rounded">
+                                <a class="text-decoration-none cursor-effect" onclick="show_content({{ job }}, {{ page_id }})">
+                                    <div class="rounded">
+                                        <h6 class="">{{ job.title }}</h6>
+                                        <h6 class="mb-2">{{ job.company_name }}</h6>
+                                        <p class="">{{ job.location }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <div class="d-flex justify-content-between mt-4">
+                            {% if page_id > 1 %}
+                            <a type="button" class="btn btn-outline-secondary" href="{{ url_for('show_page', page_id=1) }}"><<</a>
+                            {% else %}
+                            <a type="button" class="btn btn-outline-secondary" aria-disabled="true"><<</a>
+                            {% endif %}
+
+                            {% if page_id > 1 %}
+                            <a href="{{ url_for('show_page', page_id=page_id - 1) }}" type="button" class="btn btn-outline-secondary"><</a>
+                            {% else %}
+                            <a type="button" class="btn btn-outline-secondary" aria-disabled="true"><</a>
+                            {% endif%}
+
+                            <button type="button" class="btn btn-primary">{{ page_id }}</button>
+
+                            {% if page_id < total_pages %}
+                            <a href="{{ url_for('show_page', page_id=page_id + 1) }}" type="button" class="btn btn-outline-secondary">></a>
+                            {% else %}
+                            <a type="button" class="btn btn-outline-secondary" aria-disabled="true">></a>
+                            {% endif%}
+
+                            {% if page_id < total_pages %}
+                            <a type="button" class="btn btn-outline-secondary" href="{{ url_for('show_page', page_id=total_pages) }}">>></a>
+                            {% else %}
+                            <a type="button" class="btn btn-outline-secondary" aria-disabled="true">>></a>
+                            {% endif %}
                         </div>
-                        {% endfor %}
-                    </div>
-                    <div class="d-flex justify-content-between mt-4">
-                        {% if page_id > 1 %}
-                        <a type="button" class="btn btn-outline-secondary" href="{{ url_for('show_page', page_id=1) }}"><<</a>
-                        {% else %}
-                        <a type="button" class="btn btn-outline-secondary" aria-disabled="true"><<</a>
-                        {% endif %}
-
-                        {% if page_id > 1 %}
-                        <a href="{{ url_for('show_page', page_id=page_id - 1) }}" type="button" class="btn btn-outline-secondary"><</a>
-                        {% else %}
-                        <a type="button" class="btn btn-outline-secondary" aria-disabled="true"><</a>
-                        {% endif%}
-
-                        <button type="button" class="btn btn-primary">{{ page_id }}</button>
-
-                        {% if page_id < total_pages %}
-                        <a href="{{ url_for('show_page', page_id=page_id + 1) }}" type="button" class="btn btn-outline-secondary">></a>
-                        {% else %}
-                        <a type="button" class="btn btn-outline-secondary" aria-disabled="true">></a>
-                        {% endif%}
-
-                        {% if page_id < total_pages %}
-                        <a type="button" class="btn btn-outline-secondary" href="{{ url_for('show_page', page_id=total_pages) }}">>></a>
-                        {% else %}
-                        <a type="button" class="btn btn-outline-secondary" aria-disabled="true">>></a>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="right_panel w-75 pl-3">
-                    <div class="my-2 justify-content-center border rounded border-primary">
-                        <div class="w-100">
-                            <div class="d-flex flex-column py-5" id="job_content">
+                    </nav>
+                </aside>
+                <div class="right_panel w-75 mx-3">
+                    <div class="my-2 justify-content-center">
+                        <div class="">
+                            <div class="d-flex flex-column py-5 border border-primary rounded" id="job_content" >
                                 <h3 class="text-center" id="job_title"> {{jobs[0].title}} </h3>
                                 <h4 class="mb-2 text-center text-primary" id="job_company_name"> {{ jobs[0].company_name}} </h4>
                                 <p class="b-2 text-center" id="job_location">{{ jobs[0].location }} </p>
                                 <a href="{{ jobs[0].link }}" type="button" class="btn btn-primary w-50 mb-5 mx-auto" target="_blank" id="job_link">Apply</a>
                                 <p class="px-5" id="job_description"> {{ jobs[0].description }} </p>
-                                <a href="#" class="mx-auto">Back to Top</a>
+                                <a href="#job_title" class="mx-auto">Back to Top</a>
                             </div>
                         </div>
                     </div>

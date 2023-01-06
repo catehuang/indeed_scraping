@@ -13,7 +13,7 @@ PORT = 5000
 # deal with data, using dictionary is better than the class since there are lots of efforts needed to do
 # between html and js
 jobs = []
-file_path = "logs/job-2023-01-03-221026.csv"
+file_path = "logs/job-2023-01-05-180256.csv"
 df = pd.read_csv(file_path, encoding='utf8')
 # technically the max index of the row is df.shape[0], but the first row in header which is not what we want
 for row_index in range(0, df.shape[0]):
@@ -49,6 +49,7 @@ def show_page(page_id):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
+    print(f"{e}")
     return redirect('/')
 
 
