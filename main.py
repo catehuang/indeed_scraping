@@ -281,6 +281,9 @@ while keep_going:
 # create csv file , encoding='utf8'
 df = pd.DataFrame(list(zip(job_titles, company_names, apply_links, company_locations, job_descriptions)),
                   columns=["job_title", "company_name", "apply_link", "company_location", "job_description"])
+
+if not os.path.isdir("logs"):
+    os.mkdir("logs")
 df.to_csv(f"logs/job-{tag}.csv", index=False)
 
 e_time = time.time()
