@@ -6,7 +6,7 @@
 - This application uses Python, Selenium and Flask to filter jobs from Indeed, and generates a web page for reading matched jobs.
 
 ### How to use this application
-- You will need to download the Chrome Drive corresponding to your Chrome version, and create a file named .env to write down your preferences. 
+- You will need to download the Chrome Drive corresponding to your Chrome version, install python packages, and create a file named .env to write down your preferences. 
 
 - The .env should contain the following information
 <pre>
