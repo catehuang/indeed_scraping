@@ -3,7 +3,7 @@
 ### Purpose 
 - Even you carefully selected your keywords and typed them into the search field on the Indeed, you get tons of results that you don't want. You spend your valuable time to read all titles and click the next page repeatedly until you get bored or luckily reach the end of the result.
 
-- This application uses Python and Selenium to filter search results from Indeed, and generates a file job.csv with a time tag under logs folder which saves all qualified jobs with their job information.
+- This application uses Python, Selenium and Flask to filter jobs from Indeed, and generates a web page for reading matched jobs.
 
 ### How to use this application
 - You will need to download the Chrome Drive corresponding to your Chrome version, and create a file named .env to write down your preferences. 
@@ -26,11 +26,12 @@ RULES_INCLUDED=
 RULES_EXCLUDED=
 </pre>
 
-- Run main.py to scrap data from Indeed. If the number of jobs on Indeed for the specified position, location, and date posted is more than 1500, it will prompt for a confirmation to continue since it may take hours to finish the task.
+- Execute main.py to start the application.
 
-- After the scraping task completed, type "flask --app show_pages run" in the Terminal, then open browser for localhost:5000. You will see all filtered results on web pages.
+- If the application found the number of jobs on Indeed was zero or greater 1500, it will exit or prompt a message from the console to ask you if you want to continue scraping more than 1500 jobs.
 
-- Note: These processes will be improved later.
+- After the scraping is done, open the browser and enter "localhost:5000". You will see all the jobs on the web page.
+
 
 <img src="https://user-images.githubusercontent.com/35821309/211101442-1dfe7ecb-84fa-4194-907d-7f1e420841af.png" width="80%" />
 
