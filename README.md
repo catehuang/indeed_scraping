@@ -33,7 +33,7 @@ RULES_EXCLUDED=
 - After the scraping is done, open the browser and enter "localhost:5000". You will see all the jobs on the web page.
 
 
-<img src="https://user-images.githubusercontent.com/35821309/211101442-1dfe7ecb-84fa-4194-907d-7f1e420841af.png" width="80%" />
+<img src="https://user-images.githubusercontent.com/35821309/211101442-1dfe7ecb-84fa-4194-907d-7f1e420841af.png" width="90%" />
 
 
 ### How to choose the included/excluded keywords? / How do I make sure I selected the right words for searching?
