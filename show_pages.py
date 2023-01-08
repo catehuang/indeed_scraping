@@ -28,8 +28,6 @@ for row_index in range(0, df.shape[0]):
     }
     jobs.append(job)
 
-print(f"{jobs}")
-
 total_number_of_jobs = df.shape[0]
 total_pages = len(jobs) / 15
 if len(jobs) % 15 > 0:
