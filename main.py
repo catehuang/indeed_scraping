@@ -10,7 +10,7 @@ from scrap_data import DataCollection, Job
 file_name = ""
 
 
-def prepare_date():
+def prepare_data():
     jobs = []
     # setup all conditions and make sure there is data meets requirement and the amount of data is not out of the scope
     data_collection = DataCollection()
@@ -77,6 +77,6 @@ def prepare_date():
 
 
 # get data
-prepare_date()
+prepare_data()
 # render data
 os.system(f"python show_pages.py {file_name}")
