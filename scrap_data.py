@@ -189,6 +189,21 @@ class DataCollection:
                 return False
         return True
 
+    def filter_out_by_description(self, job_description):
+        if len(os.getenv('FILTER_OUT_JOB_DESC').split(" ")) != 0:
+            excluding_certain_words = os.getenv('FILTER_OUT_JOB_DESC').split(" ")
+            rule_string = ""
+            counter = 1
+            for rule in excluding_certain_words:
+                if counter > 1:
+                    rule_string += "|"
+                rule_string += rule
+                counter += 1
+
+            if re.search(rf"({rule_string})", job_description, re.I):
+                return True
+        return False
+
     def scraping_a_page(self):
         """ Scraping data from a page, and return an array of job dictionaries """
         jobs = []
@@ -230,14 +245,16 @@ class DataCollection:
                 job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
                 job_description = job_content_block.find_element(By.ID, 'jobDescriptionText')
 
-                print(f"Found the job as {job_title_block.text} - {link}")
-                # which data type is better to manipulate data?
-                # use arrays to save different columns, then use pandas to combine them as csv or json
-                # use objects to store jobs, then covert them to json (good to store to db)
-                # use json for each job (generate correct format is not easy)
-                job = Job(job_title_block.text, company_name_block.text, link, company_location_block.text,
-                          job_description.text)
-                jobs.append(job)
+                # add another filter for the content of the job description
+                if not self.filter_out_by_description(job_description.text):
+                    print(f"Found the job as {job_title_block.text} - {link}")
+                    # which data type is better to manipulate data?
+                    # use arrays to save different columns, then use pandas to combine them as csv or json
+                    # use objects to store jobs, then covert them to json (good to store to db)
+                    # use json for each job (generate correct format is not easy)
+                    job = Job(job_title_block.text, company_name_block.text, link, company_location_block.text,
+                              job_description.text)
+                    jobs.append(job)
             # scroll down for each job element
             self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
         return jobs
