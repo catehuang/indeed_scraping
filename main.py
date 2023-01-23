@@ -78,5 +78,6 @@ def prepare_data():
 
 # get data
 prepare_data()
+
 # render data
 os.system(f"python show_pages.py {file_name}")
