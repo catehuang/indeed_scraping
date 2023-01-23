@@ -93,9 +93,12 @@ class DataCollection:
             job_count_span = job_count_block.find_elements(By.CSS_SELECTOR, 'span')
             job_count = job_count_span.__getitem__(0).text
             job_number = re.sub('[^0-9]', '', job_count)
-            print(f"Total number of jobs is {job_number}, "
-                  f"and there are about {math.ceil(int(job_number) / 15)} pages based on the total number\n")
-            return job_number
+            real_job_number = int(int(job_number)/1.5)
+            print(f"Total number of jobs on Indeed is {job_number}, "
+                  f"and there are about {math.ceil(int(job_number) / 15)} pages based on the total number.\n"
+                  f"(However, the real number of jobs could be {real_job_number}, "
+                  f"and total pages is {math.ceil(real_job_number / 15)} )\n")
+            return real_job_number
         except NoSuchElementException:
             # raise ValueError("Can't find any result for the job title!")
             return -1
@@ -208,53 +211,58 @@ class DataCollection:
         """ Scraping data from a page, and return an array of job dictionaries """
         jobs = []
         # Locate target block
-        main_block = self.driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
+        try:
+            main_block = self.driver.find_element(By.CLASS_NAME, 'jobsearch-SerpMainContent')
 
-        # left column - job list and total number of jobs
-        job_list_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-LeftPane')
-        job_list = job_list_block.find_elements(By.CLASS_NAME, 'job_seen_beacon')
+            # left column - job list and total number of jobs
+            job_list_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-LeftPane')
+            job_list = job_list_block.find_elements(By.CLASS_NAME, 'job_seen_beacon')
 
-        # click qualified jobs and grep the content
-        for job_on_list in job_list:
-            job_result_block = job_on_list.find_element(By.CSS_SELECTOR, 'td') \
-                               and job_on_list.find_element(By.CLASS_NAME, 'resultContent')
-            job_title_block = job_result_block.find_element(By.CSS_SELECTOR, 'h2')
-            # filter jobs by their titles
-            if self.is_qualified(job_title_block.text):
-                company_name_block = job_result_block.find_element(By.CLASS_NAME, 'companyName')
-                company_location_block = job_result_block.find_element(By.CLASS_NAME, 'companyLocation')
-                job_title_block.click()
-                time.sleep(2)
-                # right column - content
-                right_panel = main_block.find_element(By.CLASS_NAME, 'jobsearch-RightPane')
+            # click qualified jobs and grep the content
+            for job_on_list in job_list:
+                job_result_block = job_on_list.find_element(By.CSS_SELECTOR, 'td') \
+                                   and job_on_list.find_element(By.CLASS_NAME, 'resultContent')
+                job_title_block = job_result_block.find_element(By.CSS_SELECTOR, 'h2')
+                # filter jobs by their titles
+                if self.is_qualified(job_title_block.text):
+                    company_name_block = job_result_block.find_element(By.CLASS_NAME, 'companyName')
+                    company_location_block = job_result_block.find_element(By.CLASS_NAME, 'companyLocation')
+                    job_title_block.click()
+                    time.sleep(2)
+                    # right column - content
+                    right_panel = main_block.find_element(By.CLASS_NAME, 'jobsearch-RightPane')
 
-                # grep the apply link
-                apply_button_block = right_panel.find_element(By.ID, 'jobsearch-ViewJobButtons-container')
-                # there are two kinds of button/link for applying a job
+                    # grep the apply link
+                    apply_button_block = right_panel.find_element(By.ID, 'jobsearch-ViewJobButtons-container')
+                    # there are two kinds of button/link for applying a job
 
-                try:
-                    # 1) is an anchor link for applying on company site
-                    apply_button_area = apply_button_block.find_element(By.ID, 'applyButtonLinkContainer')
-                    link = apply_button_area.find_elements(By.CSS_SELECTOR, 'a').__getitem__(0).get_attribute('href')
-                except NoSuchElementException:
-                    # 2) is a button - Apply now; copy the page url
-                    apply_button_area = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
-                    link = apply_button_area.find_element(By.CSS_SELECTOR, 'span') \
-                        .get_attribute('data-indeed-apply-joburl')
+                    try:
+                        # 1) is an anchor link for applying on company site
+                        apply_button_area = apply_button_block.find_element(By.ID, 'applyButtonLinkContainer')
+                        link = apply_button_area.find_elements(By.CSS_SELECTOR, 'a').__getitem__(0).get_attribute('href')
+                    except NoSuchElementException:
+                        # 2) is a button - Apply now; copy the page url
+                        apply_button_area = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
+                        link = apply_button_area.find_element(By.CSS_SELECTOR, 'span') \
+                            .get_attribute('data-indeed-apply-joburl')
 
-                job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
-                job_description = job_content_block.find_element(By.ID, 'jobDescriptionText')
+                    job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
+                    job_description = job_content_block.find_element(By.ID, 'jobDescriptionText')
 
-                # add another filter for the content of the job description
-                if not self.filter_out_by_description(job_description.text):
-                    print(f"Found the job as {job_title_block.text} - {link}")
-                    # which data type is better to manipulate data?
-                    # use arrays to save different columns, then use pandas to combine them as csv or json
-                    # use objects to store jobs, then covert them to json (good to store to db)
-                    # use json for each job (generate correct format is not easy)
-                    job = Job(job_title_block.text, company_name_block.text, link, company_location_block.text,
-                              job_description.text)
-                    jobs.append(job)
-            # scroll down for each job element
-            self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
+                    # add another filter for the content of the job description
+                    if not self.filter_out_by_description(job_description.text):
+                        print(f"Found the job as {job_title_block.text} - {link}")
+                        # which data type is better to manipulate data?
+                        # use arrays to save different columns, then use pandas to combine them as csv or json
+                        # use objects to store jobs, then covert them to json (good to store to db)
+                        # use json for each job (generate correct format is not easy)
+                        job = Job(job_title_block.text, company_name_block.text, link, company_location_block.text,
+                                  job_description.text)
+                        jobs.append(job)
+                # scroll down for each job element
+                self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
+        except NoSuchElementException as e:
+            print("something wrong about recognizing elements\n")
+            print(e.msg)
+            pass
         return jobs
