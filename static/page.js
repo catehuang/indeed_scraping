@@ -37,10 +37,13 @@ $(function()
 })
 
 
-/* use iframe but: because an ancestor violates the following Content Security Policy directive: "frame-ancestors 'self
+// use iframe but: because an ancestor violates the following Content Security Policy directive: "frame-ancestors 'self
+/*
 function show_content(job, page_id)
 {
-    document.getElementById("job_content").setAttribute("src", job.link);
+    const new_window = document.createElement("iframe");
+    new_window.setAttribute = "<iframe src='" + job.link + "'></iframe>")
+    document.getElementById("job_content").appendChild(new_window);
 }
 */
 
