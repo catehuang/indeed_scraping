@@ -5,7 +5,7 @@ import re
 import time
 import datetime
 import pandas
-from scrap_data import DataCollection, Job
+from scrap_data import DataCollection
 
 file_name = ""
 
