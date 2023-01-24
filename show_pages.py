@@ -32,6 +32,8 @@ total_number_of_jobs = df.shape[0]
 total_pages = len(jobs) / 15
 if len(jobs) % 15 > 0:
     total_pages += 1
+total_pages = int(total_pages)
+print(f"total pages = {total_pages}")
 
 
 @app.route("/")
