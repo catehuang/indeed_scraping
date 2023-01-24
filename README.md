@@ -24,6 +24,8 @@ IS_REMOTE=
 RULES_INCLUDED=
 # what are the keywords you don't want them show on the title of the position? keywords should be separated by a space 
 RULES_EXCLUDED=
+# filter out the job if the content contains the keyword
+FILTER_OUT_JOB_DESC=
 </pre>
 
 - Execute main.py to start the application.
