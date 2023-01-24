@@ -1,9 +1,10 @@
 ## indeed_scraping
 
 ### Purpose 
-- Even you carefully selected your keywords and typed them into the search field on the Indeed, you get tons of results that you don't want. You spend your valuable time to read all titles and click the next page repeatedly until you get bored or luckily reach the end of the result.
-
-- This application uses Python, Selenium and Flask to filter jobs from Indeed, and generates a web page for reading matched jobs.
+- Even you carefully selected your keywords and typed them into the search field on the Indeed, you get tons of results that you don't want. 
+- You spend your valuable time to read all titles and click the next page repeatedly until you get bored or luckily reach the end of the result.
+- This application saves your time up to 75% !! (varied by your selected keywords of job titles and job descriptions)
+- It utilizes Python, Selenium and Flask to filter jobs from Indeed, and generates a web page for reading matched jobs.
 
 ### How to use this application
 - You will need to download the Chrome Drive corresponding to your Chrome version, install python packages, and create a file named .env to write down your preferences. 
