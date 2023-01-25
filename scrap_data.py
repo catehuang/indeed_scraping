@@ -96,8 +96,9 @@ class DataCollection:
             real_job_number = int(int(job_number)/1.5)
             print(f"Total number of jobs on Indeed is {job_number}, "
                   f"and there are about {math.ceil(int(job_number) / 15)} pages based on the total number.\n"
-                  f"(However, the real number of jobs could be {real_job_number}, "
-                  f"and total pages is {math.ceil(real_job_number / 15)} )\n")
+                  f"(However, the real number of jobs could be between {real_job_number} and, {job_number}"
+                  f", and total pages is between {math.ceil(real_job_number/15)} and {math.ceil(int(job_number)/15)})"
+                  f". One page needs about 1 - 3 minutes to walk through.\n")
             return real_job_number
         except NoSuchElementException:
             # raise ValueError("Can't find any result for the job title!")
