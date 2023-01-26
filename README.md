@@ -8,24 +8,41 @@
 
 ### How to use this application
 - You will need to download the Chrome Drive corresponding to your Chrome version, install python packages, and create a file named .env to write down your preferences. 
+  - If your browser needs to be updated, you might have some unexpected errors occurred when you run the program.
 
-- The .env should contain the following information
+- The .env should contain the following information (values are case insensitive)
 <pre>
 # the path of chrome drive
 CHROME_DRIVER_PATH=
+
 # what position are you looking for
+# this value will feed to the search keyword on Indeed
 WHAT=
+
 # where the location of the job
+# this value will feed to the search keyword on Indeed
 WHERE=
+
 # the range of the posted date between 1/3/7/14 days
+# this value will feed to the search keyword on Indeed
 WITHIN_DAYS=
+
 # are you looking for remote jobs? 0 or 1
+# this value will feed to the search keyword on Indeed
 IS_REMOTE=
-# what are the keywords you want to see them on the title? keywords should be separated by a space 
+
+# what are the keywords you want to see them on the title? keywords should be separated by a space
+# it's picky options on job titiles
+# example: A B C => collect this job information if the job title contains A or B or C, otherwise ignore it
 RULES_INCLUDED=
-# what are the keywords you don't want them show on the title of the position? keywords should be separated by a space 
+
+# what are the keywords you don't want them show on the title of the position? keywords should be separated by a space
+# it's picky options on job titiles
+# example: A B C => ignore this job information if the job title contains A or B or C, otherwise collect it
 RULES_EXCLUDED=
-# filter out the job if the content contains the keyword
+
+# filter out the job if the content contains the keyword (be general)
+# example: A B C => ignore this job information if the job description contains A or B or C
 FILTER_OUT_JOB_DESC=
 </pre>
 
