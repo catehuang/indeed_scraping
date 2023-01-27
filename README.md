@@ -1,7 +1,7 @@
 ## indeed_scraping</h2>
 
 ### Purpose
-  - Get those job information you are looking for by filtering in required keywords and/or out unrelated ones
+  - Get job information you are looking for by filtering in required keywords and/or out unrelated ones
   - Save your valuable time (up to 95%) from scanning all job titles and descriptions from Indeed
   - Easy to use and flexible. Only need to fill in your preferences, run the program, open your browser, and then apply jobs
   - It utilizes Python, Selenium and Pandas to scrape useful data from the website, and uses Flask, JavaScript and Ajax to provide a user-friendly website for users to read matched job information
