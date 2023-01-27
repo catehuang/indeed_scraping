@@ -13,7 +13,7 @@
 
 2. Create a .env file which should contain the following information
    - Values are case insensitive
-   - Don't forget to use escape characters "\\" if the value contains special characters, such as ".", "+"
+   - Don't forget to use escape characters "\\", if the value contains special characters, such as ".", "+"
 
 ```
   # the path of chrome drive
@@ -36,17 +36,17 @@
   IS_REMOTE=
   
   # what are the keywords you want to see them on the title? keywords should be separated by a space
-  # example: A B C => collect this job information if the job title contains A or B or C, otherwise ignore it
+  # example: A B C => collect this job information, if the job title contains A or B or C, otherwise ignore it
   # if you are looking for intern or co-op, you can try "intern co-op student"
   RULES_INCLUDED=
   
   # what are the keywords you don't want them show on the title of the position? keywords should be separated by a space
-  # example: A B C => ignore this job information if the job title contains A or B or C, otherwise collect it
+  # example: A B C => ignore this job information, if the job title contains A or B or C, otherwise collect it
   # if you are looking for entry level job, you definitely don't want to see "manager lead senior sr\. intermediate staff" on the job title
   RULES_EXCLUDED=
   
   # filter out the job if the content contains the keyword (be general)
-  # example: A B C => ignore this job information if the job description contains A or B or C
+  # example: A B C => ignore this job information, if the job description contains A or B or C
   FILTER_OUT_JOB_DESC=
   
   # filter out the job if it mentions/requires n+ years' of experience; n is the value you set in the below
