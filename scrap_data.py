@@ -222,7 +222,7 @@ class DataCollection:
                         line = line_pattern2
 
                     # get the number, it could be a number or a range of year(in this case, get the first number)
-                    min_required_years = re.findall(r"\d", line[0])[0]
+                    min_required_years = re.findall(r"\d+", line[0])[0]
                     # print(f"(## Debug {line[0]}, {min_required_years})")
 
                     # ignore this job, if it needs more than n years' of professional experience
