@@ -13,7 +13,6 @@
 
 2. Create a .env file which should contain the following information
    - Values are case insensitive
-   - Don't forget to use escape characters "\\", if the value contains special characters, such as ".", "+"
 
 ```
   # the path of chrome drive
