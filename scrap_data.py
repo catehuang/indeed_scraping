@@ -161,7 +161,7 @@ class DataCollection:
                     return
 
     def is_qualified(self, title):
-        """ Return true if the title fits certain conditions (obsolete) """
+        """ Return true if the title fits certain conditions """
         if len(os.getenv('RULES_INCLUDED').split(" ")) != 0:
             including_certain_words = os.getenv('RULES_INCLUDED').split(" ")
             rule_string = ""
@@ -251,54 +251,57 @@ class DataCollection:
                 job_title_block = job_result_block.find_element(By.CSS_SELECTOR, 'h2')
 
                 # filter jobs by their titles
-                company_name_block = job_result_block.find_element(By.CLASS_NAME, 'companyName')
-                company_location_block = job_result_block.find_element(By.CLASS_NAME, 'companyLocation')
-                job_title_block.click()
-                time.sleep(2)
+                if self.is_qualified(job_title_block.text):
+                    # filter jobs by their titles
+                    company_name_block = job_result_block.find_element(By.CLASS_NAME, 'companyName')
+                    company_location_block = job_result_block.find_element(By.CLASS_NAME, 'companyLocation')
+                    job_title_block.click()
+                    time.sleep(2)
 
-                # right column - content
-                right_panel = main_block.find_element(By.CLASS_NAME, 'jobsearch-RightPane')
+                    # right column - content
+                    right_panel = main_block.find_element(By.CLASS_NAME, 'jobsearch-RightPane')
 
-                # grep the apply link
-                apply_button_block = right_panel.find_element(By.ID, 'jobsearch-ViewJobButtons-container')
+                    # grep the apply link
+                    apply_button_block = right_panel.find_element(By.ID, 'jobsearch-ViewJobButtons-container')
 
-                # there are two kinds of button/link for applying a job
-                job_expired = False
-                link = ""
-                try:
-                    # 1) is an anchor link for applying on company site
-                    apply_button_area = apply_button_block.find_element(By.ID, 'applyButtonLinkContainer')
-                    link = apply_button_area.find_elements(By.CSS_SELECTOR, 'a').__getitem__(0).get_attribute(
-                        'href')
-                except NoSuchElementException:
+                    # there are two kinds of button/link for applying a job
+                    job_expired = False
+
+                    link = ""
                     try:
-                        # 2) is a button - Apply now; copy the page url
-                        apply_button_area = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
-                        link = apply_button_area.find_element(By.CSS_SELECTOR, 'span') \
-                            .get_attribute('data-indeed-apply-joburl')
+                        # 1) is an anchor link for applying on company site
+                        apply_button_area = apply_button_block.find_element(By.ID, 'applyButtonLinkContainer')
+                        link = apply_button_area.find_elements(By.CSS_SELECTOR, 'a').__getitem__(0).get_attribute(
+                            'href')
                     except NoSuchElementException:
-                        # 3) the job expired! there's no any button
-                        print(f"skip due to the job expired {job_title_block.text}")
-                        job_expired = True
+                        try:
+                            # 2) is a button - Apply now; copy the page url
+                            apply_button_area = apply_button_block.find_element(By.CLASS_NAME, 'ia-IndeedApplyButton')
+                            link = apply_button_area.find_element(By.CSS_SELECTOR, 'span') \
+                                .get_attribute('data-indeed-apply-joburl')
+                        except NoSuchElementException:
+                            # 3) the job expired! there's no any button
+                            print(f"skip due to the job expired {job_title_block.text}")
+                            job_expired = True
 
-                if not job_expired:
-                    job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
-                    job_description = job_content_block.find_element(By.ID, 'jobDescriptionText')
+                    if not job_expired:
+                        job_content_block = main_block.find_element(By.CLASS_NAME, 'jobsearch-JobComponent-description')
+                        job_description = job_content_block.find_element(By.ID, 'jobDescriptionText')
 
-                    # add another filter for the content of the job description
-                    if not self.filter_out_by_description(job_title_block.text, job_description.text):
-                        print(f"Found the job as {job_title_block.text} - {link}")
+                        # add another filter for the content of the job description
+                        if not self.filter_out_by_description(job_title_block.text, job_description.text):
+                            print(f"Found the job as {job_title_block.text} - {link}")
 
-                        # which data type is better to manipulate data?
-                        # use arrays to save different columns, then use pandas to combine them as csv or json
-                        # use objects to store jobs, then covert them to json (good to store to db)
-                        # use json for each job (generate correct format is not easy)
-                        job = Job(job_title_block.text, company_name_block.text, link, company_location_block.text,
-                                  job_description.text)
-                        jobs.append(job)
+                            # which data type is better to manipulate data?
+                            # use arrays to save different columns, then use pandas to combine them as csv or json
+                            # use objects to store jobs, then covert them to json (good to store to db)
+                            # use json for each job (generate correct format is not easy)
+                            job = Job(job_title_block.text, company_name_block.text, link, company_location_block.text,
+                                      job_description.text)
+                            jobs.append(job)
 
-                # scroll down for each job element
-                self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
+                    # scroll down for each job element
+                    self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
 
         except NoSuchElementException as e:
             print("something wrong about recognizing elements!!!\n")
