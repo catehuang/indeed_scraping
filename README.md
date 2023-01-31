@@ -19,10 +19,20 @@
   CHROME_DRIVER_PATH=
   
   # what position are you looking for
-  # this value will feed to the search keyword on Indeed (use boolean search - the combination of AND, OR, and NOT)
+  # this value will feed to the search keyword on Indeed (better to use boolean search - the combination of AND, OR, and NOT; however, it might not work)
   # exmaple: software developer NOT (manager OR lead OR senior)
   WHAT=
   
+  # what are the keywords you want to see them on the title? keywords should be separated by a space
+  # example: A B C => collect this job information, if the job title contains A or B or C, otherwise ignore it
+  # if you are looking for intern or co-op, you can try "intern co-op student"
+  RULES_INCLUDED=
+
+  # what are the keywords you don't want them show on the title of the position? keywords should be separated by a space
+  # example: A B C => ignore this job information, if the job title contains A or B or C, otherwise collect it
+  # if you are looking for entry level job, you definitely don't want to see "manager lead senior sr\. intermediate staff" on the job title
+  RULES_EXCLUDED=
+
   # where the location of the job
   # this value will feed to the search keyword on Indeed
   WHERE=
