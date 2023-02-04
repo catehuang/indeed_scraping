@@ -209,7 +209,7 @@ class DataCollection:
             # if description required professional experience, get the line
             if len(os.getenv('FILTER_OUT_BY_MIN_REQ_YEARS')) > 0:
                 years = int(os.getenv('FILTER_OUT_BY_MIN_REQ_YEARS').split(" ")[0])
-                line_pattern1 = re.search(rf"(\d.*years.* ?(of)? experience)", job_description, re.I)
+                line_pattern1 = re.search(rf"(\d.*years.*(of)?.*experience.*(in)?)", job_description, re.I)
                 line_pattern2 = re.search(rf"experience.*: \d.*years", job_description, re.I)
 
                 if line_pattern1 is not None or line_pattern2 is not None:
