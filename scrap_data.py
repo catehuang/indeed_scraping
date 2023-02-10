@@ -162,7 +162,7 @@ class DataCollection:
 
     def is_qualified(self, title):
         """ Return true if the title fits certain conditions """
-        if len(os.getenv('RULES_INCLUDED').split(" ")) != 0:
+        if len(os.getenv('RULES_INCLUDED')) != 0:
             including_certain_words = os.getenv('RULES_INCLUDED').split(" ")
             rule_string = ""
             counter = 1
@@ -176,7 +176,7 @@ class DataCollection:
                 print(f"no keywords included - {title}")
                 return False
 
-        if len(os.getenv('RULES_EXCLUDED').split(" ")) != 0:
+        if len(os.getenv('RULES_EXCLUDED')) != 0:
             excluding_certain_words = os.getenv('RULES_EXCLUDED').split(" ")
             rule_string = ""
             counter = 1
