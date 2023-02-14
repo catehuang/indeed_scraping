@@ -192,7 +192,7 @@ class DataCollection:
         return True
 
     def filter_out_by_description(self, job_title, job_description):
-        if len(os.getenv('FILTER_OUT_JOB_DESC').split(" ")) != 0:
+        if len(os.getenv('FILTER_OUT_JOB_DESC')) != 0:
             excluding_certain_words = os.getenv('FILTER_OUT_JOB_DESC').split(" ")
             rule_string = ""
             counter = 1
