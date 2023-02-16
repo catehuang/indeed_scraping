@@ -172,7 +172,7 @@ class DataCollection:
                 rule_string += rule
                 counter += 1
 
-            if re.search(rf"({rule_string})", title, re.I) is None:
+            if re.search(rf"(`{rule_string}`)", title, re.I) is None:
                 print(f"no keywords included - {title}")
                 return False
 
@@ -186,8 +186,8 @@ class DataCollection:
                 rule_string += rule
                 counter += 1
 
-            if re.search(rf"({rule_string})", title, re.I):
-                print(f"included excluded keywords - {title}")
+            if re.search(rf"(`{rule_string}`)", title, re.I):
+                print(f"included excluded keywords - {rule_string}")
                 return False
         return True
 
@@ -202,7 +202,7 @@ class DataCollection:
                 rule_string += rule
                 counter += 1
 
-            if re.search(rf"({rule_string})", job_description, re.I):
+            if re.search(rf"(`{rule_string}`)", job_description, re.I):
                 print(f"filtered out due to job description contains keywords - {job_title}")
                 return True
 
