@@ -300,8 +300,8 @@ class DataCollection:
                                       job_description.text)
                             jobs.append(job)
 
-                    # scroll down for each job element
-                    self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
+                # scroll down for each job element
+                self.driver.execute_script("arguments[0].scrollIntoView();", job_on_list)
 
         except NoSuchElementException as e:
             print("something wrong about recognizing elements!!!\n")
